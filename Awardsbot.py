@@ -231,7 +231,6 @@ async def add(ctx,member:discord.Member,*,texto: str):
             votoelusuario=await chequear_voto(ctx.author.id)
         except Exception as e:
             print(e)
-        print(contarcantidad)
         if contarcantidad<10:
             if await grabar_premio(ctx.guild.id, member.id, texto):
                 embed=await crearembed(member,texto,ctx)
