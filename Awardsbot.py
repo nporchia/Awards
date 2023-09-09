@@ -76,7 +76,8 @@ async def tiene_rol_de_premios(ctx):
         return False  # Error al verificar el rol
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-async def chequear_voto(user_id):
+async def chequear_voto(ctx):
+    user_id = ctx.author.id
     voto= await topgg.DBLClient.get_user_vote(user_id)
     return voto
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -228,7 +229,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
         try:
-            votoelusuario=await chequear_voto(ctx.author.id)
+            votoelusuario=await chequear_voto(ctx)
         except Exception as e:
             print(e)
         print(contarcantidad)
