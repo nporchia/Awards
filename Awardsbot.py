@@ -30,7 +30,7 @@ async def get_premios_from_database(guild_id, member_id):
         return []
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-async def grabar_premio(guild_id, user_id, premio):
+def grabar_premio(guild_id, user_id, premio):
     try:
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
@@ -121,7 +121,7 @@ async def contarcantidadentradas(guild_id):
         print(f"Error al obtener los premios desde la base de datos: {e}")
         return []
     
-async def crearembed(member,texto,ctx):
+def crearembed(member,texto,ctx):
     # Crear un embed para mostrar el premio agregado
     embed = discord.Embed(
         colour=discord.Colour.from_rgb(255, 0, 130)
