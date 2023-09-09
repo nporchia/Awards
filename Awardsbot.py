@@ -78,6 +78,7 @@ async def tiene_rol_de_premios(ctx):
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def chequear_voto(user_id):
     voto= await bot.topggpy.get_user_vote(user_id)
+    print(voto)
     return voto
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -255,7 +256,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        else:
+        elif contarcantidad > 10 and votoelusuario==False:
             embed = discord.Embed(
                 colour=discord.Colour.from_rgb(255, 0, 130),
                 title="Awards limit - Vote Expired",
