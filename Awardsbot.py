@@ -30,7 +30,7 @@ async def get_premios_from_database(guild_id, member_id):
         return []
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-def grabar_premio(guild_id, user_id, premio):
+async def grabar_premio(guild_id, user_id, premio):
     try:
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
@@ -55,7 +55,7 @@ def grabar_premio(guild_id, user_id, premio):
         return False  # Error al grabar el premio
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-def tiene_rol_de_premios(ctx):
+async def tiene_rol_de_premios(ctx):
     try:
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
@@ -224,34 +224,33 @@ async def on_command_error(ctx,error):
 @commands.hybrid_command(name="add")
 async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
-    if ctx.author.guild_permissions.administrator==True or tiene_rol_de_premios(ctx):
-        contarcantidad=contarcantidadentradas(ctx.guild.id)
-        print(contarcantidad)
+    if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
+        contarcantidad= await contarcantidadentradas(ctx.guild.id)
         if contarcantidad<10:
-            if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(ctx,member,texto)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif contarcantidad < 40 and chequear_voto()==True:
-            if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+        elif contarcantidad < 40 and await chequear_voto()==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(ctx,member,texto)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif contarcantidad < 300 and chequear_voto()==True:
-            if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+        elif contarcantidad < 300 and await chequear_voto()==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(ctx,member,texto)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif contarcantidad < 5000 and chequear_voto()==True:
-            if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+        elif contarcantidad < 5000 and await chequear_voto()==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(ctx,member,texto)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif contarcantidad > 10 and chequear_voto==False:
+        elif contarcantidad > 10 and await chequear_voto==False:
             await ctx.send("Error - you have +10 awards. you have to vote for the bot and try again")
             await ctx.send("[Vote Here](https://top.gg/bot/767061271131455488/vote)")
 
