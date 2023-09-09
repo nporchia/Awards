@@ -226,7 +226,10 @@ async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
-        votoelusuario=await chequear_voto(ctx.author.id)
+        try:
+            votoelusuario=await chequear_voto(ctx.author.id)
+        except Exception as e:
+            print(e)
         print(contarcantidad)
         if contarcantidad<10:
             if await grabar_premio(ctx.guild.id, member.id, texto):
