@@ -229,27 +229,25 @@ async def add(ctx,member:discord.Member,*,texto: str):
         print(contarcantidad)
         if contarcantidad<10:
             if grabar_premio(ctx.guild.id, member.id, texto):
-                print("llegue")
-                embed=crearembed(ctx,member,texto)
-                print("hola")
+                embed=crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
         elif contarcantidad < 40 and await chequear_voto(ctx.author.id)==True:
             if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+                embed=crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
         elif contarcantidad < 300 and await chequear_voto(ctx.author.id)==True:
             if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+                embed=crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
         elif contarcantidad < 5000 and await chequear_voto(ctx.author.id)==True:
             if grabar_premio(ctx.guild.id, member.id, texto):
-                embed=crearembed(ctx,member,texto)
+                embed=crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
