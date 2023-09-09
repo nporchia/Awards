@@ -256,17 +256,20 @@ async def add(ctx,member:discord.Member,*,texto: str):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif contarcantidad > 10 and votoelusuario==False:
-            embed = discord.Embed(
-                colour=discord.Colour.from_rgb(255, 0, 130),
-                title="Awards limit - Vote Expired",
-                description="Error - you have reached awards limit. Please vote again for the bot and try again "
-            )
-            embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
-                            icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            embed.add_field(name="[Vote Here](https://top.gg/bot/767061271131455488/vote)",value="🏆")
-            await ctx.send(embed=embed)
+        else:
+            try:
+                embed = discord.Embed(
+                    colour=discord.Colour.from_rgb(255, 0, 130),
+                    title="Awards limit - Vote Expired",
+                    description="Error - you have reached awards limit. Please vote again for the bot and try again "
+                )
+                embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
+                                icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+                embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+                embed.add_field(name="[Vote Here](https://top.gg/bot/767061271131455488/vote)",value="🏆")
+                await ctx.send(embed=embed)
+            except:
+                await ctx.send("No se pudo mandar el embed")
     else:
         await ctx.send("Forbidden, you need role or administrator perms")
 
