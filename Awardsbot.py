@@ -255,7 +255,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
-        elif votoelusuario==False:
+        else:
             embed = discord.Embed(
                 colour=discord.Colour.from_rgb(255, 0, 130),
                 title="Awards limit - Vote Expired",
