@@ -104,7 +104,39 @@ async def grabarinvites(bot):
                 print(f'Error al procesar servidor {serv.name}: {e}')
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
+async def contarcantidadentradas(guild_id):
+    try:
+        cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
+        db = cluster["awardsbot"]
+        collection = db["entradas"]
 
+        # Realizar la consulta a la base de datos utilizando la instancia del cliente MongoDB
+        cantidaddocumentos = collection.count_documents({"guild_id":guild_id})
+
+        # Cerrar la conexión a la base de datos
+        cluster.close()
+
+        return cantidaddocumentos
+    except Exception as e:
+        print(f"Error al obtener los premios desde la base de datos: {e}")
+        return []
+    
+async def crearembed(member,texto,ctx):
+    # Crear un embed para mostrar el premio agregado
+    embed = discord.Embed(
+        colour=discord.Colour.from_rgb(255, 0, 130)
+    )
+    embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
+                    icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+    embed.add_field(name="**Awarded User:**", value=member.mention, inline=True)
+    
+    try:
+        embed.set_thumbnail(url=member.avatar.url)
+        embed.set_footer(text=ctx.guild.name,icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+    except:
+        pass
+    embed.add_field(name="**Award:**", value=texto, inline=False)
+    return embed
 #!
 # ? sdsad
 #TODO:
@@ -193,26 +225,35 @@ async def on_command_error(ctx,error):
 async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
     if ctx.author.guild_permissions.administrator==True or tiene_rol_de_premios(ctx):
-        if grabar_premio(ctx.guild.id, member.id, texto):
+        contarcantidad=contarcantidadentradas(ctx.guild.id)
+        if contarcantidad<10:
+            if grabar_premio(ctx.guild.id, member.id, texto):
+                embed=crearembed(ctx,member,texto)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 40 and chequear_voto()==True:
+            if grabar_premio(ctx.guild.id, member.id, texto):
+                embed=crearembed(ctx,member,texto)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 300 and chequear_voto()==True:
+            if grabar_premio(ctx.guild.id, member.id, texto):
+                embed=crearembed(ctx,member,texto)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 5000 and chequear_voto()==True:
+            if grabar_premio(ctx.guild.id, member.id, texto):
+                embed=crearembed(ctx,member,texto)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad > 10 and chequear_voto==False:
+            await ctx.send("Error - you have +10 awards. you have to vote for the bot and try again")
+            await ctx.send("[Vote Here](https://top.gg/bot/767061271131455488/vote)")
 
-            # Crear un embed para mostrar el premio agregado
-            embed = discord.Embed(
-                colour=discord.Colour.from_rgb(255, 0, 130)
-            )
-            embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
-                             icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            embed.add_field(name="**Awarded User:**", value=member.mention, inline=True)
-            
-            try:
-                embed.set_thumbnail(url=member.avatar.url)
-                embed.set_footer(text=ctx.guild.name,icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            except:
-                pass
-            embed.add_field(name="**Award:**", value=texto, inline=False)
-
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("Error when writing the award please try again")
     else:
         await ctx.send("Forbidden, you need role or administrator perms")
 
