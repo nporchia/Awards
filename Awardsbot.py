@@ -266,7 +266,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
                             icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
             embed.add_field(name="[Vote Here](https://top.gg/bot/767061271131455488/vote)",value="🏆")
-            await ctx.send("")
+            await ctx.send(embed=embed)
     else:
         await ctx.send("Forbidden, you need role or administrator perms")
 
