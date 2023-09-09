@@ -229,7 +229,9 @@ async def add(ctx,member:discord.Member,*,texto: str):
         print(contarcantidad)
         if contarcantidad<10:
             if grabar_premio(ctx.guild.id, member.id, texto):
+                print("llegue")
                 embed=crearembed(ctx,member,texto)
+                print("hola")
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
