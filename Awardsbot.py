@@ -227,7 +227,6 @@ async def add(ctx,member:discord.Member,*,texto: str):
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
         print(contarcantidad)
-        print(await chequear_voto(ctx.author.id))
         if contarcantidad<10:
             if await grabar_premio(ctx.guild.id, member.id, texto):
                 embed=await crearembed(ctx,member,texto)
