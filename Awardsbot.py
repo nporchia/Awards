@@ -6,7 +6,7 @@ import pymongo
 from pymongo import MongoClient
 import random
 import topgg
-
+import datetime
 #!
 
 
@@ -32,6 +32,8 @@ async def get_premios_from_database(guild_id, member_id):
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def grabar_premio(guild_id, user_id, premio):
     try:
+        fecha_actual = datetime.datetime.now()
+        año=fecha_actual.year
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
         collection = db["entradas"]
@@ -40,7 +42,8 @@ async def grabar_premio(guild_id, user_id, premio):
         documento_premio = {
             "guild_id": guild_id,
             "id_usuario": user_id,
-            "premio_usuario": f"- [  {premio}  ]"
+            "premio_usuario": f"- [  {premio}  ]",
+            "ano":año
         }
 
         # Insertar el documento en la colección
@@ -225,6 +228,7 @@ async def on_command_error(ctx,error):
 @commands.hybrid_command(name="add")
 async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
+
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
         try:
