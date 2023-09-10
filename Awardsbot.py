@@ -234,20 +234,18 @@ async def add(ctx,member:discord.Member,*,texto: str):
 
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
-        try:
-            votoelusuario=await chequear_voto(ctx.author.id)
-        except Exception as e:
-            print(e)
-        print("45")
+        #try:
+        #    votoelusuario=await chequear_voto(ctx.author.id)
+        #except Exception as e:
+        #   print(e)
+        votoelusuario=True
         if contarcantidad<10:
-            print("3")
             if await grabar_premio(ctx.guild.id, member.id, texto):
                 embed=await crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Error when writing the award please try again")
         elif contarcantidad < 40 and votoelusuario==True:
-            print("4")
             if await grabar_premio(ctx.guild.id, member.id, texto):
                 embed=await crearembed(member,texto,ctx)
                 await ctx.send(embed=embed)
@@ -266,7 +264,6 @@ async def add(ctx,member:discord.Member,*,texto: str):
             else:
                 await ctx.send("Error when writing the award please try again")
         else:
-            print("5")
             try:
                 embed = discord.Embed(
                     colour=discord.Colour.from_rgb(255, 0, 130),
