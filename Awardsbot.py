@@ -234,6 +234,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
         try:
             votoelusuario=await chequear_voto(ctx.author.id)
         except Exception as e:
+            votoelusuario==True
             print(e)
         if contarcantidad<10:
             if await grabar_premio(ctx.guild.id, member.id, texto):
