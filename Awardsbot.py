@@ -187,7 +187,7 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.idle, activity=discord.Game(estado))
     print('Conectado como: {0.user}'.format(bot))
     dbl_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'  # set this to your bot's Top.gg token
-    bot.topggpy = topgg.DBLClient(bot, dbl_token, autopost=True, post_shard_count=True)
+    bot.topggpy = topgg.DBLClient(bot, dbl_token, post_shard_count=True)
     cambiarestatus.start()
 #? ********************************************************************************************************************************************************************
 @tasks.loop(seconds=30)
