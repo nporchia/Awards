@@ -80,6 +80,7 @@ async def tiene_rol_de_premios(ctx):
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def chequear_voto(user_id):
+    print("1")
     voto= await bot.topggpy.get_user_vote(user_id)
     return voto
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -230,14 +231,12 @@ async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
 
     if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
-        print("1")
         contarcantidad= await contarcantidadentradas(ctx.guild.id)
         try:
-            print("2")
             votoelusuario=await chequear_voto(ctx.author.id)
         except Exception as e:
-            votoelusuario==True
             print(e)
+        print("45")
         if contarcantidad<10:
             print("3")
             if await grabar_premio(ctx.guild.id, member.id, texto):
