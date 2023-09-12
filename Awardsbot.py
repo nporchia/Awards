@@ -6,8 +6,8 @@ import pymongo
 from pymongo import MongoClient
 import random
 import topgg
-
-
+import datetime
+#!
 
 
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,8 +30,10 @@ async def get_premios_from_database(guild_id, member_id):
         return []
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-def grabar_premio(guild_id, user_id, premio):
+async def grabar_premio(guild_id, user_id, premio):
     try:
+        fecha_actual = datetime.datetime.now()
+        año=fecha_actual.year
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
         collection = db["entradas"]
@@ -40,7 +42,8 @@ def grabar_premio(guild_id, user_id, premio):
         documento_premio = {
             "guild_id": guild_id,
             "id_usuario": user_id,
-            "premio_usuario": f"- [  {premio}  ]"
+            "premio_usuario": f"- [  {premio}  ]",
+            "ano":año
         }
 
         # Insertar el documento en la colección
@@ -55,7 +58,7 @@ def grabar_premio(guild_id, user_id, premio):
         return False  # Error al grabar el premio
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-def tiene_rol_de_premios(ctx):
+async def tiene_rol_de_premios(ctx):
     try:
         cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
         db = cluster["awardsbot"]
@@ -76,8 +79,12 @@ def tiene_rol_de_premios(ctx):
         return False  # Error al verificar el rol
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
-async def chequear_voto(id):
-    return(topgg.DBLClient.get_user_vote(id))
+async def chequear_voto(user_id):
+    try:
+        voto= await bot.topggpy.get_user_vote(user_id)
+    except Exception as e:
+        print(e)
+    return voto
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def grabarinvites(bot):
@@ -104,7 +111,39 @@ async def grabarinvites(bot):
                 print(f'Error al procesar servidor {serv.name}: {e}')
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
+async def contarcantidadentradas(guild_id):
+    try:
+        cluster = pymongo.MongoClient("mongodb+srv://nporchi:SUSANA18@cluster0.wm8rg.mongodb.net/awardsbot?retryWrites=true&w=majority")
+        db = cluster["awardsbot"]
+        collection = db["entradas"]
 
+        # Realizar la consulta a la base de datos utilizando la instancia del cliente MongoDB
+        cantidaddocumentos = collection.count_documents({"guild_id":guild_id})
+
+        # Cerrar la conexión a la base de datos
+        cluster.close()
+
+        return cantidaddocumentos
+    except Exception as e:
+        print(f"Error al obtener los premios desde la base de datos: {e}")
+        return []
+    
+async def crearembed(member,texto,ctx):
+    # Crear un embed para mostrar el premio agregado
+    embed = discord.Embed(
+        colour=discord.Colour.from_rgb(255, 0, 130)
+    )
+    embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
+                    icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+    embed.add_field(name="**Awarded User:**", value=member.mention, inline=True)
+    
+    try:
+        embed.set_thumbnail(url=member.avatar.url)
+        embed.set_footer(text=ctx.guild.name,icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+    except:
+        pass
+    embed.add_field(name="**Award:**", value=texto, inline=False)
+    return embed
 #!
 # ? sdsad
 #TODO:
@@ -151,7 +190,7 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.idle, activity=discord.Game(estado))
     print('Conectado como: {0.user}'.format(bot))
     dbl_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'  # set this to your bot's Top.gg token
-    bot.topggpy = topgg.DBLClient(bot, dbl_token, autopost=True, post_shard_count=True)
+    bot.topggpy = topgg.DBLClient(bot, dbl_token,)
     cambiarestatus.start()
 #? ********************************************************************************************************************************************************************
 @tasks.loop(seconds=30)
@@ -192,27 +231,52 @@ async def on_command_error(ctx,error):
 @commands.hybrid_command(name="add")
 async def add(ctx,member:discord.Member,*,texto: str):
     await ctx.defer()
-    if ctx.author.guild_permissions.administrator==True or tiene_rol_de_premios(ctx):
-        if grabar_premio(ctx.guild.id, member.id, texto):
 
-            # Crear un embed para mostrar el premio agregado
-            embed = discord.Embed(
-                colour=discord.Colour.from_rgb(255, 0, 130)
-            )
-            embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
-                             icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            embed.add_field(name="**Awarded User:**", value=member.mention, inline=True)
-            
-            try:
-                embed.set_thumbnail(url=member.avatar.url)
-                embed.set_footer(text=ctx.guild.name,icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
-            except:
-                pass
-            embed.add_field(name="**Award:**", value=texto, inline=False)
-
-            await ctx.send(embed=embed)
+    if ctx.author.guild_permissions.administrator==True or await tiene_rol_de_premios(ctx):
+        contarcantidad= await contarcantidadentradas(ctx.guild.id)
+        #try:
+        #    votoelusuario=await chequear_voto(ctx.author.id)
+        #except Exception as e:
+        #   print(e)
+        votoelusuario=True
+        if contarcantidad<10:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(member,texto,ctx)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 40 and votoelusuario==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(member,texto,ctx)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 300 and votoelusuario==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(member,texto,ctx)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
+        elif contarcantidad < 5000 and votoelusuario==True:
+            if await grabar_premio(ctx.guild.id, member.id, texto):
+                embed=await crearembed(member,texto,ctx)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Error when writing the award please try again")
         else:
-            await ctx.send("Error when writing the award please try again")
+            try:
+                embed = discord.Embed(
+                    colour=discord.Colour.from_rgb(255, 0, 130),
+                    title="Awards limit - Vote Expired",
+                    description="Error - you have reached awards limit. Please vote again for the bot and try again "
+                )
+                embed.set_author(name="Awardsbot", url="https://discord.gg/dTFM2B5Mgw",
+                                icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+                embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
+                embed.add_field(name="Vote Here",value="🏆https://top.gg/bot/767061271131455488/vote")
+                await ctx.send(embed=embed)
+            except:
+                await ctx.send("Error sending the embed")
     else:
         await ctx.send("Forbidden, you need role or administrator perms")
 
