@@ -172,7 +172,7 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     #!Guarda las invites de los servidores en los que el bot tiene el permiso manage_server
-    #grabarinvites(bot)
+    #await grabarinvites(bot)
     #!-
 
     #? Añade los comandos
@@ -184,18 +184,27 @@ async def on_ready():
 
     await bot.tree.sync()
     #? -
-
+    i=0
 
     estado="Support:  https://discord.gg/dTFM2B5Mgw"
     await bot.change_presence(status=discord.Status.idle, activity=discord.Game(estado))
     print('Conectado como: {0.user}'.format(bot))
+
+    print(i)
     dbl_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'  # set this to your bot's Top.gg token
     bot.topggpy = topgg.DBLClient(bot, dbl_token,)
     cambiarestatus.start()
 #? ********************************************************************************************************************************************************************
 @tasks.loop(seconds=30)
 async def cambiarestatus():
-    statuses=["|| / ||","|| Support:  https://discord.gg/dTFM2B5Mgw ||",f"|| On {len(bot.guilds)} servers ||"]
+    try:
+        i=0
+        for guild in bot.guilds:
+            i=i+guild.member_count
+    except:
+        print("Error in changing status")
+
+    statuses=["|| Support:  https://discord.gg/dTFM2B5Mgw ||",f"|| Awarding {i} users ||"]
     status=random.choice(statuses)
     await bot.change_presence(activity=discord.Game(name=status))
 #? ********************************************************************************************************************************************************************
