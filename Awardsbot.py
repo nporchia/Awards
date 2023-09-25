@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import random
 import topgg
 import datetime
+import requests
 #!
 
 
@@ -81,10 +82,37 @@ async def tiene_rol_de_premios(ctx):
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def chequear_voto(user_id):
     try:
-        voto= await bot.topggpy.get_user_vote(user_id)
-    except Exception as e:
-        print(e)
-    return voto
+        # Reemplaza 'YOUR_API_KEY' con tu clave de API de top.gg
+        api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'
+
+        # Reemplaza 'BOT_ID' con el ID de tu bot en top.gg y 'USER_ID' con el ID del usuario que deseas verificar
+        bot_id = '767061271131455488'
+        user_id_string = f'{user_id}'
+
+        # URL de la API de top.gg para verificar si un usuario ha votado por tu bot
+        url = f'https://top.gg/api/bots/{bot_id}/check?userId={user_id_string}'
+
+        # Encabezado de autorización con tu clave de API
+        headers = {
+            'Authorization': api_key
+        }
+
+        # Realiza la solicitud GET
+        response = requests.get(url, headers=headers)
+
+        # Verifica si la solicitud fue exitosa
+        if response.status_code == 200:
+            data = response.json()
+            if data['voted']:
+                return True
+            else:
+                return False
+        else:
+            print(f'Error al hacer la solicitud: {response.status_code}')
+            return False
+    except:
+        return False
+        print("Hubo un error en chequear voto")
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def grabarinvites(bot):
@@ -172,7 +200,7 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     #!Guarda las invites de los servidores en los que el bot tiene el permiso manage_server
-    #await grabarinvites(bot)
+    await grabarinvites(bot)
     #!-
 
     #? Añade los comandos
@@ -247,7 +275,7 @@ async def add(ctx,member:discord.Member,*,texto: str):
         #    votoelusuario=await chequear_voto(ctx.author.id)
         #except Exception as e:
         #   print(e)
-        votoelusuario=True
+        votoelusuario=await chequear_voto(ctx.author.id)
         if contarcantidad<10:
             if await grabar_premio(ctx.guild.id, member.id, texto):
                 embed=await crearembed(member,texto,ctx)
