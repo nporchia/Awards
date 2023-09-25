@@ -200,7 +200,7 @@ bot.remove_command('help')
 @bot.event
 async def on_ready():
     #!Guarda las invites de los servidores en los que el bot tiene el permiso manage_server
-    await grabarinvites(bot)
+    #await grabarinvites(bot)
     #!-
 
     #? Añade los comandos
