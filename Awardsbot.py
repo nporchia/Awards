@@ -68,12 +68,14 @@ async def tiene_rol_de_premios(ctx):
 
         result = collection.find_one({"guild_id": guild_id})
         rol_premio = result["id_role"]
+        if rol_premio==None:
+            await ctx.send("There's no role assigned for non-admin players to give awards : You cant give a award, only the admin can")
         if ctx.author.id==329450671319285763:
             return True
         for role in ctx.author.roles:
             if role.id == rol_premio:
                 return True  # El usuario tiene el rol de premios
-
+        await ctx.send("You dont have the right role for giving awards")
         return False  # El usuario no tiene el rol de premios
     except Exception as e:
         print(f"Error al verificar el rol de premios: {e}")
