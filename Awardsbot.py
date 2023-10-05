@@ -386,15 +386,14 @@ async def awards(ctx,member:discord.Member):
         secreo=discord.utils.format_dt(member.created_at,style="R")
         embed.add_field(name="📆| Created At :",value=secreo)
         embed.add_field(name="📅| Joined At :",value=seunio)
-        embed.add_field(name="📍| Top Role :",value=member.top_role.mention)
-        embed.add_field(name="🔰|ID",value=f"`{member.id}`")
+        embed.add_field(name="<a:verificado_blanco:755134769704206530>| Top Role :",value=member.top_role.mention)
+        embed.add_field(name="<a:ddevs:850081111241785425>|ID",value=f"`{member.id}`")
         if member.premium_since!=None:
             embed.add_field(name="<a:discordnitrogifpic:1149099463210696734>| Nitro",value="Yes")
         else:
             embed.add_field(name="<a:discordnitrogifpic:1149099463210696734>| Nitro",value="No")
     except:
         print(Exception.__name__)
-
     if len(lista)==0:
         embed.add_field(name='<a:e01c37a096d444bdb87fd75f254373e3:1159616706520547489>| Awards',value='None yet')
         
