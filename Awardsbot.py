@@ -114,6 +114,33 @@ async def chequear_voto(user_id):
         return False
         print("Hubo un error en chequear voto")
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
+async def postserverquantity():
+    try:
+        # Reemplaza 'YOUR_API_KEY' con tu clave de API de top.gg
+        api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'
+
+        # Reemplaza 'BOT_ID' con el ID de tu bot en top.gg
+        bot_id = '767061271131455488'
+
+        # URL de la API de top.gg para obtener información sobre tu bot
+        url = f'https://top.gg/api/bots/{bot_id}/stats'
+
+        # Datos a enviar en la solicitud POST
+        data = {
+            'server_count': len(bot.guilds)
+        }
+
+        # Encabezado de autorización con tu clave de API
+        headers = {
+            'Authorization': api_key
+        }
+
+        # Realiza la solicitud POST
+        response = requests.post(url, json=data, headers=headers)
+        print("Se actualizo server count topgg")
+
+    except:
+        print("Error al postear cantidad de servidores")
 #! --------------------------------------------------------------------------------------------------------------------------------------------------------------
 async def grabarinvites(bot):
     cantidadservidores=0
@@ -222,6 +249,8 @@ async def on_ready():
     dbl_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NzA2MTI3MTEzMTQ1NTQ4OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA2MDc4MzI3fQ.PCNzbQ83P2C7ly2SIRsc7DkKkQHcrxlhfpHzCMSlkqo'  # set this to your bot's Top.gg token
     bot.topggpy = topgg.DBLClient(bot, dbl_token,)
     cambiarestatus.start()
+    await postserverquantity()
+    """postguildcount.start()"""
 #? ********************************************************************************************************************************************************************
 @tasks.loop(seconds=30)
 async def cambiarestatus():
@@ -235,6 +264,9 @@ async def cambiarestatus():
     statuses=["|| Support:  https://discord.gg/dTFM2B5Mgw ||",f"|| Awarding {i} users ||"]
     status=random.choice(statuses)
     await bot.change_presence(activity=discord.Game(name=status))
+"""@tasks.loop(hours=10)
+async def postguildcount():
+"""
 #? ********************************************************************************************************************************************************************
 @bot.event
 async def on_guild_join(guild):
@@ -355,18 +387,18 @@ async def awards(ctx,member:discord.Member):
         embed.add_field(name="📍| Top Role :",value=member.top_role.mention)
         embed.add_field(name="🔰|ID",value=f"`{member.id}`")
         if member.premium_since!=None:
-            embed.add_field(name="🌟| Nitro",value="Yes")
+            embed.add_field(name="<a:discordnitrogifpic:1149099463210696734>| Nitro",value="Yes")
         else:
-            embed.add_field(name="🌟| Nitro",value="No")
+            embed.add_field(name="<a:discordnitrogifpic:1149099463210696734>| Nitro",value="No")
     except:
         print(Exception.__name__)
 
     if len(lista)==0:
-        embed.add_field(name='💥| Awards',value='None yet')
+        embed.add_field(name='<a:e01c37a096d444bdb87fd75f254373e3:1159616706520547489>| Awards',value='None yet')
         
     else:
         awards_text = '\n '.join(lista)
-        embed.add_field(name='💥| Awards', value=f"**{awards_text}**", inline=False)
+        embed.add_field(name='<a:e01c37a096d444bdb87fd75f254373e3:1159616706520547489>| Awards', value=f"**{awards_text}**", inline=False)
 
     embed.set_author(name="Awardsbot",url="https://discord.gg/dTFM2B5Mgw",icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
     embed.set_footer(text=nombre, icon_url="https://cdn.discordapp.com/attachments/753056988618948748/772542364161409034/trofeo.jpg")
